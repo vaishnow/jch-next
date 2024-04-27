@@ -1,6 +1,5 @@
 import Image from "next/image";
 import footerImg from "@/public/tomoko-uji-jGHVjPJM_x0-unsplash.jpg";
-import { list } from "postcss";
 import Link from "next/link";
 
 export default function Footer() {

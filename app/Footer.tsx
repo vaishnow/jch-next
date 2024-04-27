@@ -53,11 +53,11 @@ export default function Footer() {
       />
       <div className="grid grid-cols-4 w-full">
         {footerData.map(({ head, list }) => (
-          <div className="p-5">
+          <div className="p-5" key={head}>
             <h4>{head}</h4>
             <ul>
               {list.map((li) => (
-                <li>
+                <li key={li.text}>
                   <Link href={li.url}>{li.text}</Link>
                 </li>
               ))}

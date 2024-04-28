@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FaCalendar, FaYenSign } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import jpCities from "@/data/japan-cities.json";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type JobDetail = {
   contents: string;
@@ -50,7 +51,7 @@ export default function Jobs() {
 
   const fetcher = (endpoint: string) =>
     fetch(endpoint).then((res) => res.json().then((data) => data.results));
-  
+
   const [currJob, setCurrJob] = useState<string>("");
   const [currJobList, setCurrJobList] = useState<JobDetail>();
   const [currCity, setCurrCity] = useState<string>(defaultCity);
@@ -93,7 +94,7 @@ export default function Jobs() {
 
   return (
     <>
-      <section className="h-[98vh] pt-24 px-3">
+      <section className="h-[98vh] pt-24 px-3 duration-500">
         <div className="flex h-full">
           <div className="me-4">
             <Select onValueChange={(e) => setCurrCity(e)}>
@@ -112,9 +113,7 @@ export default function Jobs() {
             </Select>
             <div className="min-w-80 max-w-96 bg-[#ececec] h-full mt-3">
               {isLoading ? (
-                <div className="text-center">
-                  <h3>Loading Jobs...</h3>
-                </div>
+                <Skeleton className="bg-slate-300 size-full" />
               ) : (
                 <ScrollArea className="h-full rounded-md border">
                   <div className="pt-4 px-2">
@@ -188,9 +187,7 @@ export default function Jobs() {
             </div>
             <div className="bg-[#f1f1f1] h-full mt-3">
               {isLoading ? (
-                <div className="flex size-full items-center justify-center">
-                  <h2>Loading Job Description....</h2>
-                </div>
+                <Skeleton className="bg-slate-300 size-full" />
               ) : error ? (
                 <div className="flex size-full items-center justify-center">
                   <h2>Failed to load, try refreshing the page</h2>

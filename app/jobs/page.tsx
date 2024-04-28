@@ -94,9 +94,9 @@ export default function Jobs() {
 
   return (
     <>
-      <section className="h-[98vh] pt-24 px-3 duration-500">
-        <div className="flex h-full">
-          <div className="me-4">
+      <section className="md:h-[98vh] pt-24 px-3 duration-500">
+        <div className="flex h-full max-md:flex-col-reverse">
+          <div className="md:me-4 max-md:mt-3">
             <Select onValueChange={(e) => setCurrCity(e)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a City" />
@@ -111,7 +111,7 @@ export default function Jobs() {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <div className="min-w-80 max-w-96 bg-[#ececec] h-full mt-3">
+            <div className="md:min-w-80 md:max-w-96 bg-[#ececec] h-full mt-3">
               {isLoading ? (
                 <Skeleton className="bg-slate-300 size-full" />
               ) : (
@@ -185,7 +185,7 @@ export default function Jobs() {
                 onChange={(e) => handleSearch(e)}
               />
             </div>
-            <div className="bg-[#f1f1f1] h-full mt-3">
+            <div className="bg-[#f1f1f1] h-full mt-3 max-md:hidden">
               {isLoading ? (
                 <Skeleton className="bg-slate-300 size-full" />
               ) : error ? (
@@ -193,7 +193,7 @@ export default function Jobs() {
                   <h2>Failed to load, try refreshing the page</h2>
                 </div>
               ) : (
-                <ScrollArea className="h-full  rounded-md border">
+                <ScrollArea className="h-full rounded-md border">
                   <div className="p-4">
                     <h4 className="mb-4 text-sm font-medium leading-none">
                       Job Description

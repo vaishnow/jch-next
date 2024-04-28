@@ -4,9 +4,18 @@ import useSWR from "swr";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FaCalendar, FaYenSign } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
+import jpCities from "@/data/japan-cities.json";
 
 type JobDetail = {
   contents: string;
@@ -37,14 +46,17 @@ type JobDetail = {
 }[];
 
 export default function Jobs() {
+  const defaultCity = "Tokyo%2C%20Japan";
+
   const fetcher = (endpoint: string) =>
     fetch(endpoint).then((res) => res.json().then((data) => data.results));
-
+  
   const [currJob, setCurrJob] = useState<string>("");
   const [currJobList, setCurrJobList] = useState<JobDetail>();
+  const [currCity, setCurrCity] = useState<string>(defaultCity);
 
-  const { data, isLoading, error } = useSWR<JobDetail>(
-    "https://www.themuse.com/api/public/jobs?location=Aalen%2C%20Germany&page=1",
+  const { data, isLoading, error, mutate } = useSWR<JobDetail>(
+    `https://www.themuse.com/api/public/jobs?location=${currCity}&page=1`,
     fetcher
   );
 
@@ -75,12 +87,30 @@ export default function Jobs() {
     setCurrJobList(data);
   }, [data]);
 
+  useEffect(() => {
+    mutate();
+  }, [currCity]);
+
   return (
     <>
       <section className="h-[98vh] pt-24 px-3">
         <div className="flex h-full">
-          <div>
-            <div className="min-w-80 max-w-96 me-4 bg-[#ececec] h-full">
+          <div className="me-4">
+            <Select onValueChange={(e) => setCurrCity(e)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a City" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {jpCities.map((city) => (
+                    <SelectItem value={city.replace(", ", "%2C%20")} key={city}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <div className="min-w-80 max-w-96 bg-[#ececec] h-full mt-3">
               {isLoading ? (
                 <div className="text-center">
                   <h3>Loading Jobs...</h3>
@@ -148,7 +178,7 @@ export default function Jobs() {
               )}
             </div>
           </div>
-          <div className="grow max-h-auto flex flex-col ">
+          <div className="grow max-h-auto">
             <div className="flex w-full items-center space-x-2">
               <Input
                 type="text"
@@ -156,7 +186,7 @@ export default function Jobs() {
                 onChange={(e) => handleSearch(e)}
               />
             </div>
-            <div className="bg-[#f1f1f1] h-auto grow mt-3">
+            <div className="bg-[#f1f1f1] h-full mt-3">
               {isLoading ? (
                 <div className="flex size-full items-center justify-center">
                   <h2>Loading Job Description....</h2>

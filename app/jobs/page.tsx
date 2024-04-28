@@ -1,8 +1,9 @@
 "use client";
 
 import useSWR from "swr";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FaCalendar, FaYenSign } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
@@ -47,95 +48,135 @@ export default function Jobs() {
     fetcher
   );
 
+  let timeout: ReturnType<typeof setTimeout>;
+
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    timeout && clearTimeout(timeout);
+    timeout = setTimeout(
+      () =>
+        setCurrJobList(
+          data?.filter((job) =>
+            job.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+            job.company.name
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase()) ||
+            job.locations.find((loc) =>
+              loc.name.toLowerCase().includes(e.target.value.toLowerCase())
+            )
+              ? true
+              : false
+          )
+        ),
+      1000
+    );
+  };
+
   useEffect(() => {
     setCurrJobList(data);
   }, [data]);
 
   return (
     <>
-      <div></div>
-      <section className="h-[98vh] pt-24 px-3 flex">
-        <div className="min-w-80 me-4 bg-[#ececec]">
-          {isLoading ? (
-            <div className="text-center">
-              <h3>Loading Jobs...</h3>
-            </div>
-          ) : (
-            <ScrollArea className="h-full rounded-md border">
-              <div className="pt-4 px-2">
-                <h4 className="mb-4 text-sm font-medium leading-none">Jobs</h4>
-                <div>
-                  {currJobList?.map((job) => (
-                    <div
-                      className="rounded-lg max-h-60 bg-slate-50 my-2 p-1 pb-3 drop-shadow-2xl"
-                      key={job.id}
-                      onClick={() => setCurrJob(job.contents)}
-                    >
-                      <h4 className="line-clamp-1">{job.name}</h4>
-                      <div className="text-sm">
-                        <p className="line-clamp-1">{job.company?.name}</p>
-                        <div className="my-3">
-                          <div className="flex items-center">
-                            <FaYenSign />
-                            <span className="line-clamp-1">---</span>
-                          </div>
-                          <div className="flex items-center">
-                            <FaLocationDot />
-                            {job.locations.map((location) => (
-                              <span
-                                className="line-clamp-1"
-                                key={location.name}
-                              >
-                                {location.name}
-                              </span>
-                            ))}
-                          </div>
-                          <div className="flex items-center">
-                            <FaCalendar />
-                            {job.levels?.map((level) => (
-                              <span
-                                className="line-clamp-1"
-                                key={level.short_name}
-                              >
-                                {level.name}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="flex pt-3">
-                          {job.categories.map((category) => (
-                            <Badge className="bg-jp-red rounded-sm">
-                              {category.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+      <section className="h-[98vh] pt-24 px-3">
+        <div className="flex h-full">
+          <div>
+            <div className="min-w-80 max-w-96 me-4 bg-[#ececec] h-full">
+              {isLoading ? (
+                <div className="text-center">
+                  <h3>Loading Jobs...</h3>
                 </div>
-              </div>
-            </ScrollArea>
-          )}
-        </div>
-        <div className="grow bg-[#f1f1f1]">
-          {isLoading ? (
-            <div className="flex size-full items-center justify-center">
-              <h2>Loading Job Description....</h2>
+              ) : (
+                <ScrollArea className="h-full rounded-md border">
+                  <div className="pt-4 px-2">
+                    <h4 className="mb-4 text-sm font-medium leading-none">
+                      Jobs
+                    </h4>
+                    <div>
+                      {currJobList?.map((job) => (
+                        <div
+                          className="rounded-lg max-h-60 bg-slate-50 my-2 p-1 pb-3 drop-shadow-2xl"
+                          key={job.id}
+                          onClick={() => setCurrJob(job.contents)}
+                        >
+                          <h4 className="line-clamp-1">{job.name}</h4>
+                          <div className="text-sm">
+                            <p className="line-clamp-1">{job.company?.name}</p>
+                            <div className="my-3">
+                              <div className="flex items-center">
+                                <FaYenSign />
+                                <span className="line-clamp-1">---</span>
+                              </div>
+                              <div className="flex items-center">
+                                <FaLocationDot />
+                                {job.locations.map((location) => (
+                                  <span
+                                    className="line-clamp-1"
+                                    key={location.name}
+                                  >
+                                    {location.name}
+                                  </span>
+                                ))}
+                              </div>
+                              <div className="flex items-center">
+                                <FaCalendar />
+                                {job.levels?.map((level) => (
+                                  <span
+                                    className="line-clamp-1"
+                                    key={level.short_name}
+                                  >
+                                    {level.name}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="flex pt-3">
+                              {job.categories.map((category) => (
+                                <Badge
+                                  className="bg-jp-red rounded-sm"
+                                  key={category.name}
+                                >
+                                  {category.name}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </ScrollArea>
+              )}
             </div>
-          ) : error ? (
-            <div className="flex size-full items-center justify-center">
-              <h2>Failed to load, try refreshing the page</h2>
+          </div>
+          <div className="grow max-h-auto flex flex-col ">
+            <div className="flex w-full items-center space-x-2">
+              <Input
+                type="text"
+                placeholder="Search Jobs"
+                onChange={(e) => handleSearch(e)}
+              />
             </div>
-          ) : (
-            <ScrollArea className="h-full  rounded-md border">
-              <div className="p-4">
-                <h4 className="mb-4 text-sm font-medium leading-none">
-                  Job Description
-                </h4>
-                <div dangerouslySetInnerHTML={{ __html: currJob }}></div>
-              </div>
-            </ScrollArea>
-          )}
+            <div className="bg-[#f1f1f1] h-auto grow mt-3">
+              {isLoading ? (
+                <div className="flex size-full items-center justify-center">
+                  <h2>Loading Job Description....</h2>
+                </div>
+              ) : error ? (
+                <div className="flex size-full items-center justify-center">
+                  <h2>Failed to load, try refreshing the page</h2>
+                </div>
+              ) : (
+                <ScrollArea className="h-full  rounded-md border">
+                  <div className="p-4">
+                    <h4 className="mb-4 text-sm font-medium leading-none">
+                      Job Description
+                    </h4>
+                    <div dangerouslySetInnerHTML={{ __html: currJob }}></div>
+                  </div>
+                </ScrollArea>
+              )}
+            </div>
+          </div>
         </div>
       </section>
     </>
